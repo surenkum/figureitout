@@ -1,0 +1,7 @@
+cmake_minimum_required(VERSION 2.8)
+project( annotate_video )
+find_package( OpenCV REQUIRED )
+SET(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin)
+SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin)
+add_executable( annotate_video src/annotate_video.cpp )
+target_link_libraries( annotate_video ${OpenCV_LIBS} )
