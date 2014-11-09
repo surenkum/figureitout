@@ -51,8 +51,12 @@ class ImageConverter
         : it_(nh_)
     {
         // Subscrive to input video feed and publish output video feed
-        image_sub_ = it_.subscribe("/ardrone/front/image_raw", 1, 
+       /* image_sub_ = it_.subscribe("/ardrone/front/image_raw", 1, 
+                &ImageConverter::imageCb, this);*/
+        image_sub_ = it_.subscribe("/ardrone/bottom/image_raw", 1, 
                 &ImageConverter::imageCb, this);
+        /* image_sub_ = it_.subscribe("/usb_cam/image_raw", 1, 
+                &ImageConverter::imageCb, this);*/
         image_pub_ = it_.advertise("/image_converter/output_video", 1);
 
         cv::namedWindow(OPENCV_WINDOW);
@@ -84,21 +88,20 @@ class ImageConverter
 
         // Output modified video stream
         //image_pub_.publish(cv_ptr->toImageMsg());
-        cv::Mat frame(cv_ptr->image);
-        det_decision = detect_obj(obj_im,frame,scene_corners);
+        //cv::Mat frame(cv_ptr->image);
+        det_decision = detect_obj(obj_im,cv_ptr->image,scene_corners);
         if (det_decision){
-            std::cout<<"Target Object"<<obj_name<<" Found"<<std::endl;
+
             //std::cout<<"Detection Decision "<<det_decision<<std::endl;
             //-- Draw lines between the corners (the mapped object in the scene - image_2 )
-            line( frame, scene_corners[0] , scene_corners[1] , cv::Scalar(255, 255, 0), 4 );
-            line( frame, scene_corners[1] , scene_corners[2] , cv::Scalar( 255, 255, 0), 4 );
-            line( frame, scene_corners[2] , scene_corners[3] , cv::Scalar( 255, 255, 0), 4 );
-            line( frame, scene_corners[3] , scene_corners[0] , cv::Scalar( 255, 255, 0), 4 );
+            cv::line( cv_ptr->image, scene_corners[0] , scene_corners[1] , cv::Scalar(255, 255, 0), 4 );
+            cv::line( cv_ptr->image, scene_corners[1] , scene_corners[2] , cv::Scalar( 255, 255, 0), 4 );
+            cv::line( cv_ptr->image, scene_corners[2] , scene_corners[3] , cv::Scalar( 255, 255, 0), 4 );
+            cv::line( cv_ptr->image, scene_corners[3] , scene_corners[0] , cv::Scalar( 255, 255, 0), 4 );
 
         }
-        cv::imshow(OPENCV_WINDOW,frame);
-        cv::imshow("Target Object",obj_im);
-        cv::waitKey(10);
+        cv::imshow(OPENCV_WINDOW,cv_ptr->image);
+        cv::waitKey(3);
 
     }
 };
@@ -116,7 +119,7 @@ int main(int argc, char** argv)
 
     // List all the classes found
     std::cout<<"Currently available classes are: ";
-    for (uint8_t i =0;i<all_classes.size();i++){
+    for (unsigned int i =0;i<all_classes.size();i++){
         std::cout<<all_classes[i]<<",";
     }
     std::cout<<std::endl;
@@ -126,6 +129,8 @@ int main(int argc, char** argv)
 
     obj_im = cv::imread(data_path.string()+obj_name+files_ext);
 
+    cv::imshow("Target Object",obj_im);
+    cv::waitKey(10);
     ImageConverter ic;
     ros::spin();
     return 0;

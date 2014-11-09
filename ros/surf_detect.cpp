@@ -9,7 +9,7 @@ bool detect_obj(cv::Mat img_object,cv::Mat img_scene,std::vector<cv::Point2f>& s
     { std::cout<< " --(!) Error reading images " << std::endl; return false; }
 
     // Minimum number of good matches by which we declare if we found an object
-    uint8_t min_matches = 20; 
+    unsigned int min_matches = 20; 
     //-- Step 1: Detect the keypoints using SURF Detector
     int minHessian = 400;
 
@@ -47,7 +47,7 @@ bool detect_obj(cv::Mat img_object,cv::Mat img_scene,std::vector<cv::Point2f>& s
             //-- Draw only "good" matches (i.e. whose distance is less than 3*min_dist )
             std::vector< DMatch > good_matches;
 
-            for( uint8_t i = 0; i < descriptors_object.rows; i++ )
+            for(int i = 0; i < descriptors_object.rows; i++ )
             { if( matches[i].distance < 3*min_dist )
                 { good_matches.push_back( matches[i]); }
             }
@@ -59,7 +59,7 @@ bool detect_obj(cv::Mat img_object,cv::Mat img_scene,std::vector<cv::Point2f>& s
                 std::vector<Point2f> obj;
                 std::vector<Point2f> scene;
 
-                for( uint8_t i = 0; i < good_matches.size(); i++ )
+                for( unsigned int i = 0; i < good_matches.size(); i++ )
                 {
                     //-- Get the keypoints from the good matches
                     obj.push_back( keypoints_object[ good_matches[i].queryIdx ].pt );
